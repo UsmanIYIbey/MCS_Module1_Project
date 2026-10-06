@@ -1,0 +1,9 @@
+output/
+
+#VS Code
+.vscode/
+
+# Backup files created by editors
+*~
+*.swp
+*.swo
