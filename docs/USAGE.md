@@ -1,335 +1,272 @@
-# RISC-V Log Analyzer — Command Reference
+# Makefile Usage
 
-## Command Syntax
+The project includes a `Makefile` to simplify common tasks such as running the analyzer, testing the analyzer, generating reports, cleaning generated files, and checking required tools.
 
-```bash
-./analyze.sh <log_file> [options]
-```
+Instead of typing the complete `./analyze.sh` command every time, you can use `make` commands.
 
-The log file is the required first argument. Options are provided after the log file.
+## Makefile Syntax
 
-Example:
+The general syntax is:
 
 ```bash
-./analyze.sh log_file.log --format csv --output report.csv
+make <target>
 ```
-
----
-
-## Arguments
-
-### `<log_file>`
-
-Path to the RISC-V simulation log file.
-
-Example:
-
-```bash
-./analyze.sh log_file.log
-```
-
-The log file is required.
-
-If no log file is provided:
-
-```bash
-./analyze.sh
-```
-
-the script reports an error and exits.
-
----
-
-# Options
-
-## `--format`
-
-Select the output format.
-
-### Syntax
-
-```bash
---format <format>
-```
-
-Supported formats:
-
-| Format | Description |
-|---|---|
-| `text` | Human-readable text report |
-| `csv` | Comma-separated report |
-
-The default format is:
-
-```text
-text
-```
-
-### Example
-
-```bash
-./analyze.sh log_file.log --format text
-```
-
-CSV output:
-
-```bash
-./analyze.sh log_file.log --format csv
-```
-
-If an unsupported format is provided:
-
-```bash
-./analyze.sh log_file.log --format json
-```
-
-the script reports that only `text` and `csv` are supported.
-
----
-
-## `--output`
-
-Specify where the generated report should be written.
-
-### Syntax
-
-```bash
---output <path>
-```
-
-If `--output` is not specified, the report is written to standard output (the terminal).
-
-### Example
-
-```bash
-./analyze.sh log_file.log --output report.txt
-```
-
-The report is written to:
-
-```text
-report.txt
-```
-
-CSV report:
-
-```bash
-./analyze.sh log_file.log --format csv --output report.csv
-```
-
----
-
-## `--verbose`
-
-Enable verbose output.
-
-### Syntax
-
-```bash
---verbose
-```
-
-Example:
-
-```bash
-./analyze.sh log_file.log --verbose
-```
-
-Verbose mode can be used when additional information about processing is required.
-
----
-
-## `--help`
-
-Display the command usage information.
-
-### Syntax
-
-```bash
-./analyze.sh --help
-```
-
-Example output:
-
-```text
-Usage
-./analyze.sh <Path to log file (required)>
---format [text|csv]: Output format (default: text)
---output <path>: Output file path (default: stdout)
---verbose: Enable verbose output
---help: Print usage information
-```
-
-The script exits after displaying the help information.
-
----
-
-# Combining Options
-
-Multiple options can be used in the same command.
-
-### Text report written to a file
-
-```bash
-./analyze.sh log_file.log --format text --output report.txt
-```
-
-### CSV report written to a file
-
-```bash
-./analyze.sh log_file.log --format csv --output report.csv
-```
-
-### CSV report with verbose mode
-
-```bash
-./analyze.sh log_file.log --format csv --verbose
-```
-
-### All options
-
-```bash
-./analyze.sh log_file.log --format csv --output report.csv --verbose
-```
-
----
-
-# Report Contents
-
-The analyzer extracts the following information from the simulation log.
-
-## Test Summary
-
-The report contains:
-
-- Total number of tests
-- Number of passed tests
-- Number of failed tests
-- Number of skipped tests
-- Percentage of passed tests
-- Percentage of failed tests
-- Percentage of skipped tests
-
-Example:
-
-```text
---- Results Summary ---
-Total Tests:         4
-Passed:              2 (50%)
-Fail:                1 (25%)
-Skipped:             1 (25%)
-```
-
-## Failed Tests
-
-Failed test names are listed separately.
-
-Example:
-
-```text
-------Failed Tests-----------
- 1. rv32i-sll
-```
-
-## Timing Statistics
-
-For tests that contain timing information, the analyzer calculates:
-
-- Minimum execution time
-- Test with the minimum execution time
-- Maximum execution time
-- Test with the maximum execution time
-- Average execution time
-
-Example:
-
-```text
-----------------Timing Statistics----------------
-Min time: 0.65s (rv32i-sub)
-Max time: 1.02s (rv32i-sll)
-Avg time: 0.83s
-```
-
----
-
-# Expected Log Format
-
-The analyzer expects test-related lines similar to:
-
-```text
-[2026-05-01 10:23:45] TEST START: rv32i-add
-[2026-05-01 10:23:46] TEST PASS: rv32i-add (0.82s)
-[2026-05-01 10:23:46] TEST START: rv32i-sub
-[2026-05-01 10:23:47] TEST PASS: rv32i-sub (0.65s)
-[2026-05-01 10:23:47] TEST START: rv32i-sll
-[2026-05-01 10:23:48] TEST FAIL: rv32i-sll (1.02s)
-[2026-05-01 10:23:48] ERROR: Signature mismatch at line 42
-[2026-05-01 10:23:48] TEST START: rv32i-srl
-[2026-05-01 10:23:48] TEST SKIP: rv32i-srl (not supported)
-```
-
-The analyzer recognizes the following test status patterns:
-
-```text
-TEST START
-TEST PASS
-TEST FAIL
-TEST SKIP
-```
-
----
-
-# Exit Behavior
-
-The script exits successfully after processing a valid log file.
-
-An error exit status is used when a required argument is missing or another input error occurs.
 
 For example:
 
 ```bash
-./analyze.sh
+make help
 ```
 
-results in an error because the log file is required.
+displays the available Makefile targets.
 
 ---
 
-# Examples
+## Available Targets
 
-## Example 1 — Basic Analysis
+The Makefile provides the following targets:
 
-```bash
-./analyze.sh log_file.log
-```
+| Target   | Description                                              |
+| -------- | -------------------------------------------------------- |
+| `all`    | Run the analyzer on all test log files                   |
+| `test`   | Run the analyzer on test data and verify expected output |
+| `report` | Generate a summary report in `output/`                   |
+| `clean`  | Remove generated output files                            |
+| `help`   | Display available Makefile targets                       |
+| `setup`  | Check that all required tools are installed              |
 
-Produces a text report on the terminal.
+---
 
-## Example 2 — CSV Report
+## `make all`
 
-```bash
-./analyze.sh log_file.log --format csv
-```
+Runs the analyzer on all available test log files.
 
-Produces the report in CSV format.
-
-## Example 3 — Save Report
-
-```bash
-./analyze.sh log_file.log --output analysis.txt
-```
-
-Saves the report to `analysis.txt`.
-
-## Example 4 — Complete Command
+### Syntax
 
 ```bash
-./analyze.sh log_file.log --format csv --output analysis.csv --verbose
+make all
 ```
 
-This:
+This target is useful for performing a complete analysis of the available simulation logs.
 
-1. Reads `log_file.log`
-2. Generates a CSV report
-3. Saves the report as `analysis.csv`
-4. Enables verbose processing information
+Example:
+
+```bash
+$ make all
+```
+
+The Makefile runs the analyzer for each applicable log file.
+
+---
+
+## `make test`
+
+Runs the analyzer against the project's test data and checks the results against the expected output.
+
+### Syntax
+
+```bash
+make test
+```
+
+Example:
+
+```bash
+$ make test
+```
+
+This target is useful for verifying that changes to `analyze.sh` have not broken existing functionality.
+
+A typical workflow after modifying the analyzer is:
+
+```bash
+make test
+```
+
+If the tests pass, the analyzer is behaving as expected.
+
+---
+
+## `make report`
+
+Generates a summary report and stores the generated files in the `output/` directory.
+
+### Syntax
+
+```bash
+make report
+```
+
+Example:
+
+```bash
+$ make report
+```
+
+After running the target, generated reports can be found under:
+
+```text
+output/
+```
+
+This target is useful when a report needs to be generated without manually entering the complete analyzer command.
+
+---
+
+## `make clean`
+
+Removes generated output files.
+
+### Syntax
+
+```bash
+make clean
+```
+
+Example:
+
+```bash
+$ make clean
+```
+
+This is useful for returning the project to a clean state before running tests or generating new reports.
+
+**Note:** This target should remove generated files only. Source files such as `analyze.sh`, `Makefile`, and test input files should not be deleted.
+
+---
+
+## `make help`
+
+Displays the available Makefile targets and their descriptions.
+
+### Syntax
+
+```bash
+make help
+```
+
+Example:
+
+```bash
+$ make help
+```
+
+A typical help message may look like:
+
+```text
+Available targets:
+  all      Run analyzer on all test log files
+  test     Run analyzer tests
+  report   Generate summary report
+  clean    Remove generated output files
+  setup    Check required tools
+  help     Show this help message
+```
+
+`make help` is useful when you forget the available project commands.
+
+---
+
+## `make setup`
+
+Checks whether the required tools for the project are available.
+
+### Syntax
+
+```bash
+make setup
+```
+
+Example:
+
+```bash
+$ make setup
+```
+
+The setup check can verify tools such as:
+
+```text
+bash
+grep
+sed
+make
+```
+
+If a required tool is missing, the setup check should report the problem.
+
+This target is especially useful when setting up the project on a new Linux system.
+
+---
+
+# Typical Makefile Workflow
+
+A recommended workflow for the project is:
+
+### 1. Check the environment
+
+```bash
+make setup
+```
+
+### 2. Run the tests
+
+```bash
+make test
+```
+
+### 3. Generate the report
+
+```bash
+make report
+```
+
+### 4. Run the complete analyzer
+
+```bash
+make all
+```
+
+### 5. Clean generated files when needed
+
+```bash
+make clean
+```
+
+---
+
+# Direct Script vs Makefile
+
+The analyzer can still be executed directly without using `make`.
+
+For example:
+
+```bash
+./analyze.sh log_file.log --format csv --output report.csv
+```
+
+The Makefile provides shortcuts for common project operations.
+
+| Direct command                  | Makefile approach                   |
+| ------------------------------- | ----------------------------------- |
+| `./analyze.sh log_file.log`     | Use the appropriate Makefile target |
+| Run all logs manually           | `make all`                          |
+| Run tests manually              | `make test`                         |
+| Generate report manually        | `make report`                       |
+| Delete generated files manually | `make clean`                        |
+| Check available commands        | `make help`                         |
+| Check required tools            | `make setup`                        |
+
+The Makefile does not replace `analyze.sh`. It provides an easier way to automate and organize frequently used commands.
+
+---
+
+# Makefile Help
+
+To see the available project commands at any time:
+
+```bash
+make help
+```
+
+This is the recommended starting point if you are unfamiliar with the project's Makefile.
+
