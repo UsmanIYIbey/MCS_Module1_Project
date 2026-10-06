@@ -1,6 +1,6 @@
 # RISC-V Log Analyzer Makefile
 
-ANALYZER := ./analyze.sh
+ANALYZER := ./scripts/analyze.sh
 TEST_DIR := test_data
 OUTPUT_DIR := output
 
